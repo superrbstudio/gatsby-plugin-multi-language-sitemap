@@ -1,0 +1,8 @@
+/*.js
+/__tests__
+!index.js
+yarn.lock
+.DS_Store
+node_modules
+public
+build
