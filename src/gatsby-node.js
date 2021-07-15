@@ -105,16 +105,19 @@ export const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destin
     publicBasePath += '/';
   }
   langs = langs.includes('x-default') ? langs: langs.push('x-default') && langs
+  // pipe items file
+  const urlsMap = generateUrlsMap(langs, sourceData);
+  const filesInfoArray= generatefilesInfoArray(urlsMap, langs);
+  langs = [] // clear langs to filter langs that had no items.
+  for(const {lang, pageContent} of filesInfoArray) {
+    fs.writeFileSync(path.resolve(destinationDir, lang + '-sitemap.xml'), pageContent);
+    langs.push(lang);
+  }
   // pipe index file
   const sitemapIndexLocs = langs.map(lang => hostname + path.normalize(publicBasePath + lang + '-sitemap.xml'))
   const sitemapIndexXML = generateSitemapIndexXML(sitemapIndexLocs)
   const sitemapIndexWritePath = path.resolve(destinationDir, `sitemap-index.xml`)
   fs.writeFileSync(sitemapIndexWritePath, sitemapIndexXML)
-  const urlsMap = generateUrlsMap(langs, sourceData);
-  const filesInfoArray= generatefilesInfoArray(urlsMap, langs);
-  for(const {fileName, pageContent} of filesInfoArray) {
-    fs.writeFileSync(path.resolve(destinationDir, fileName), pageContent);
-  }
   return {
     sitemapIndexXML,
     filesInfoArray
@@ -122,7 +125,7 @@ export const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destin
 }
 
 // generate all files info array 
-// the data sturcture like this, [{fileName:string, fileContent:string}, ]
+// the data sturcture like this, [{lang:string, fileContent:string}, ]
 function generatefilesInfoArray(urlsMap, langs) {
   const pagesContent = []
   const allData = []
@@ -148,8 +151,7 @@ function generatefilesInfoArray(urlsMap, langs) {
         pageContentArray.join('')
       )
     )
-    const fileName = lang + '-sitemap.xml'
-    pagesContent.push({fileName, pageContent})
+    pagesContent.push({lang, pageContent})
   }
   return pagesContent;
 }

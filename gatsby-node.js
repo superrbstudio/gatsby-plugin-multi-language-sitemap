@@ -170,7 +170,22 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
     publicBasePath += '/';
   }
 
-  langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // pipe index file
+  langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // pipe items file
+
+  var urlsMap = generateUrlsMap(langs, sourceData);
+  var filesInfoArray = generatefilesInfoArray(urlsMap, langs);
+  langs = []; // clear langs to filter langs that had no items.
+
+  for (var _iterator2 = _createForOfIteratorHelperLoose(filesInfoArray), _step2; !(_step2 = _iterator2()).done;) {
+    var _step2$value = _step2.value,
+        lang = _step2$value.lang,
+        pageContent = _step2$value.pageContent;
+
+    _fs.default.writeFileSync(_path.default.resolve(destinationDir, lang + '-sitemap.xml'), pageContent);
+
+    langs.push(lang);
+  } // pipe index file
+
 
   var sitemapIndexLocs = langs.map(function (lang) {
     return hostname + _path.default.normalize(publicBasePath + lang + '-sitemap.xml');
@@ -181,23 +196,12 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
 
   _fs.default.writeFileSync(sitemapIndexWritePath, sitemapIndexXML);
 
-  var urlsMap = generateUrlsMap(langs, sourceData);
-  var filesInfoArray = generatefilesInfoArray(urlsMap, langs);
-
-  for (var _iterator2 = _createForOfIteratorHelperLoose(filesInfoArray), _step2; !(_step2 = _iterator2()).done;) {
-    var _step2$value = _step2.value,
-        fileName = _step2$value.fileName,
-        pageContent = _step2$value.pageContent;
-
-    _fs.default.writeFileSync(_path.default.resolve(destinationDir, fileName), pageContent);
-  }
-
   return {
     sitemapIndexXML: sitemapIndexXML,
     filesInfoArray: filesInfoArray
   };
 }; // generate all files info array 
-// the data sturcture like this, [{fileName:string, fileContent:string}, ]
+// the data sturcture like this, [{lang:string, fileContent:string}, ]
 
 
 exports.resolveSitemapAndIndex = resolveSitemapAndIndex;
@@ -236,9 +240,8 @@ function generatefilesInfoArray(urlsMap, langs) {
 
     if (pageContentArray.length === 0) continue;
     var pageContent = (0, _sitemapxml.wrapWithXMLHeader)((0, _sitemapxml.wrapWithUrlset)(pageContentArray.join('')));
-    var fileName = lang + '-sitemap.xml';
     pagesContent.push({
-      fileName: fileName,
+      lang: lang,
       pageContent: pageContent
     });
   }
