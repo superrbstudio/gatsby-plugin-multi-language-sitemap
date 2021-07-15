@@ -2,20 +2,20 @@
 // you can do below
 // 1. uncomment
 // 2. run yarn build && yarn start 
-const { resolveSitemapAndIndex } = require('./build/gatsby-node')
+const { resolveSitemapAndIndex } = require('./gatsby-node')
 resolveSitemapAndIndex({
   hostname: 'https://www.aftership.com',
   publicBasePath: `/sitemap/demo`,
-  destinationDir: `public/${Math.floor(Math.random()*100)}/sitemap`,
+  destinationDir: `public/sitemap`,
   sourceData: [
     {
-      shorturl: '/',
+      shorturl: '/test',
       url: 'https://www.aftership.com/test/',
       changefreq: 'daily',
       priority: 0.7
     },
     {
-      shorturl: '/editor',
+      shorturl: '/test/editor',
       url: 'https://www.aftership.com/test/editor',
       changefreq: 'daily',
       priority: 0.7
@@ -51,6 +51,12 @@ resolveSitemapAndIndex({
       priority: 0.7
     },
     {
+      shorturl: '/features',
+      url: 'https://www.aftership.com/test/zh-Hans/features',
+      changefreq: 'daily',
+      priority: 0.7
+    },
+    {
       shorturl: '/zh-Hans/',
       url: 'https://www.aftership.com/test/zh-Hans/',
       changefreq: 'daily',
@@ -64,6 +70,12 @@ resolveSitemapAndIndex({
     },
     {
       shorturl: '/fr/',
+      url: 'https://www.aftership.com/test/fr/',
+      changefreq: 'daily',
+      priority: 0.7
+    },
+    {
+      shorturl: '/',
       url: 'https://www.aftership.com/test/fr/',
       changefreq: 'daily',
       priority: 0.7

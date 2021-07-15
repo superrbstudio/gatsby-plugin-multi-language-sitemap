@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`gatsby-plugin-sitemap Node API aftership moke data 1`] = `
+Object {
+  "filesInfoArray": Array [
+    Object {
+      "fileName": "fr-sitemap.xml",
+      "pageContent": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><urlset xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\" xmlns:xhtml=\\"http://www.w3.org/1999/xhtml\\"><url><loc>https://www.aftership.com/test/fr/</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"zh-Hans\\" href=\\"https://www.aftership.com/test/zh-Hans/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"fr\\" href=\\"https://www.aftership.com/test/fr/\\" /></url><url><loc>https://www.aftership.com/test/fr/features</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"zh-Hans\\" href=\\"https://www.aftership.com/test/zh-Hans/features\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"fr\\" href=\\"https://www.aftership.com/test/fr/features\\" /></url></urlset>",
+    },
+    Object {
+      "fileName": "zh-Hans-sitemap.xml",
+      "pageContent": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><urlset xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\" xmlns:xhtml=\\"http://www.w3.org/1999/xhtml\\"><url><loc>https://www.aftership.com/test/zh-Hans/</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"zh-Hans\\" href=\\"https://www.aftership.com/test/zh-Hans/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"fr\\" href=\\"https://www.aftership.com/test/fr/\\" /></url><url><loc>https://www.aftership.com/test/zh-Hans/features</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"zh-Hans\\" href=\\"https://www.aftership.com/test/zh-Hans/features\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"fr\\" href=\\"https://www.aftership.com/test/fr/features\\" /></url></urlset>",
+    },
+    Object {
+      "fileName": "x-default-sitemap.xml",
+      "pageContent": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><urlset xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\" xmlns:xhtml=\\"http://www.w3.org/1999/xhtml\\"><url><loc>https://www.aftership.com/test/</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"zh-Hans\\" href=\\"https://www.aftership.com/test/zh-Hans/\\" /><xhtml:link rel=\\"alternate\\" hreflang=\\"fr\\" href=\\"https://www.aftership.com/test/fr/\\" /></url><url><loc>https://www.aftership.com/test/editor</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/editor\\" /></url><url><loc>https://www.aftership.com/test/amp/editor</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/amp/editor\\" /></url><url><loc>https://www.aftership.com/test/amp/apps/mazet</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/amp/apps/mazet\\" /></url><url><loc>https://www.aftership.com/test/apps/legion-express</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/apps/legion-express\\" /></url><url><loc>https://www.aftership.com/test/amp/apps/legion-express</loc><xhtml:link rel=\\"alternate\\" hreflang=\\"x-default\\" href=\\"https://www.aftership.com/test/amp/apps/legion-express\\" /></url></urlset>",
+    },
+  ],
+  "sitemapIndexXML": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><sitemapindex xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\"><sitemap><loc>https://www.aftership.com/test/subdir/fr-sitemap.xml</loc></sitemap><sitemap><loc>https://www.aftership.com/test/subdir/zh-Hans-sitemap.xml</loc></sitemap><sitemap><loc>https://www.aftership.com/test/subdir/x-default-sitemap.xml</loc></sitemap></sitemapindex>",
+}
+`;

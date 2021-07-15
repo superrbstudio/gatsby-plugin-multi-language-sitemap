@@ -20,11 +20,6 @@ export const pluginOptionsSchema = ({ Joi }) =>
       .description(
         `Whether to populate the \`<head>\` of your site with a link to the sitemap.`
       ),
-    entryLimit: Joi.number()
-      .default(45000) // default based on upstream "sitemap" plugin default, may need optimization
-      .description(
-        `Number of entries per sitemap file, a sitemap index and multiple sitemaps are created if you have more entries.`
-      ),
     query: Joi.string()
       .default(
         oneLine`{

@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sitemapxml wrapWithLoc 1`] = `"<loc>https://www.automizely.com/assets/v3/sitemap-0.xml</loc>"`;
+
+exports[`sitemapxml wrapWithSitemapAndLoc 1`] = `"<sitemap><loc>https://www.automizely.com/assets/v3/sitemap-0.xml</loc></sitemap>"`;
+
+exports[`sitemapxml wrapWithSitemapAndLocs 1`] = `"<sitemap><loc>https://www.automizely.com/assets/v3/sitemap-0.xml</loc></sitemap><sitemap><loc>https://www.automizely.com/assets/v3/sitemap-1.xml</loc></sitemap><sitemap><loc>https://www.automizely.com/assets/v3/sitemap-2.xml</loc></sitemap>"`;
+
+exports[`sitemapxml wrapWithSitemapIndex 1`] = `"<sitemapindex xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\">https://www.automizely.com/assets/v3/sitemap-0.xml</sitemapindex>"`;
+
+exports[`sitemapxml wrapWithUrl 1`] = `"<url>https://www.automizely.com/assets/v3/sitemap-0.xml</url>"`;
+
+exports[`sitemapxml wrapWithUrlset 1`] = `"<urlset xmlns=\\"http://www.sitemaps.org/schemas/sitemap/0.9\\" xmlns:xhtml=\\"http://www.w3.org/1999/xhtml\\">https://www.automizely.com/assets/v3/sitemap-0.xml</urlset>"`;
+
+exports[`sitemapxml wrapWithXMLHeader 1`] = `"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>https://www.automizely.com/assets/v3/sitemap-0.xml"`;
+
+exports[`sitemapxml wrapWithXMLLink 1`] = `"<xhtml:link rel=\\"alternate\\" hreflang=\\"https://www.automizely.com/assets/v3/sitemap-0.xml\\" href=\\"undefined\\" />"`;

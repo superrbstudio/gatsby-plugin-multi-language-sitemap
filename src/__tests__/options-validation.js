@@ -16,20 +16,19 @@ describe(`pluginOptionsSchema`, () => {
     const pluginOptions = await pluginOptionsSchema({ Joi }).validateAsync({})
 
     expect(pluginOptions).toMatchInlineSnapshot(`
-      Object {
-        "createLinkInHead": true,
-        "entryLimit": 45000,
-        "excludes": Array [],
-        "filterPages": [Function],
-        "langs": Array [],
-        "output": "/sitemap",
-        "query": "{ site { siteMetadata { siteUrl } } allSitePage { nodes { path } } }",
-        "resolvePagePath": [Function],
-        "resolvePages": [Function],
-        "resolveSiteUrl": [Function],
-        "serialize": [Function],
-      }
-    `)
+Object {
+  "createLinkInHead": true,
+  "excludes": Array [],
+  "filterPages": [Function],
+  "langs": Array [],
+  "output": "/sitemap",
+  "query": "{ site { siteMetadata { siteUrl } } allSitePage { nodes { path } } }",
+  "resolvePagePath": [Function],
+  "resolvePages": [Function],
+  "resolveSiteUrl": [Function],
+  "serialize": [Function],
+}
+`)
   })
 
   it.each`

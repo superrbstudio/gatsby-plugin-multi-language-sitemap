@@ -2,7 +2,7 @@ import path from "path"
 import { pluginOptionsSchema } from "./options-validation"
 import fs from "fs"
 import { prefixPath, pageFilter, REPORTER_PREFIX } from "./internals"
-import { SitemapIndexStream, SitemapItemStream } from "sitemap";
+import { generateSitemapIndexXML, wrapWithLoc, wrapWithUrl, wrapWithUrlset, wrapWithXMLHeader, wrapWithXMLLink } from "./sitemapxml"
 
 exports.pluginOptionsSchema = pluginOptionsSchema
 
@@ -10,7 +10,6 @@ exports.onPostBuild = async (
   { graphql, reporter, pathPrefix },
   {
     output,
-    entryLimit,
     query,
     excludes,
     resolveSiteUrl,
@@ -99,67 +98,94 @@ exports.onPostBuild = async (
 
 // resolve sitemap and index
 export const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDir, sourceData, langs }) => {
-  // console.log({hostname, publicBasePath, destinationDir, sourceData, langs})
-  // get langsMap and classfication
-  const langsMap = generateEmptyLangsMap(langs, sourceData);
   // mkdir if not exist
   fs.mkdirSync(destinationDir, { recursive: true });
   // normalize path
   if (!publicBasePath.endsWith('/')) {
     publicBasePath += '/';
   }
+  langs = langs.includes('x-default') ? langs: langs.push('x-default') && langs
   // pipe index file
-  const sitemapIndexStream = new SitemapIndexStream({ level: 'warn' });
-  sitemapIndexStream.pipe(fs.createWriteStream(path.resolve(destinationDir, 'sitemap-index.xml')));
-  for (const lang of langs) {
-    sitemapIndexStream.write({
-      url: hostname + path.normalize(publicBasePath + lang + '-sitemap.xml') // out url
-    })
+  const sitemapIndexLocs = langs.map(lang => hostname + path.normalize(publicBasePath + lang + '-sitemap.xml'))
+  const sitemapIndexXML = generateSitemapIndexXML(sitemapIndexLocs)
+  const sitemapIndexWritePath = path.resolve(destinationDir, `sitemap-index.xml`)
+  fs.writeFileSync(sitemapIndexWritePath, sitemapIndexXML)
+  const urlsMap = generateUrlsMap(langs, sourceData);
+  const filesInfoArray= generatefilesInfoArray(urlsMap, langs);
+  for(const {fileName, pageContent} of filesInfoArray) {
+    fs.writeFileSync(path.resolve(destinationDir, fileName), pageContent);
   }
-  sitemapIndexStream.end()
-  for (const [lang, items] of langsMap) {
-    resolveSitemapItem({
-      items: items,
-      path: path.resolve(destinationDir, lang + '-sitemap.xml')
-    })
+  return {
+    sitemapIndexXML,
+    filesInfoArray
   }
-  return langsMap;
 }
 
-// resolve one site map item
-// write to path
-function resolveSitemapItem({ items, path }) {
-  const sitemapItemStream = new SitemapItemStream({ level: 'warn' })
-  sitemapItemStream.pipe(fs.createWriteStream(path))
-  for (const item of items) 
-    sitemapItemStream.write(item)
-  sitemapItemStream.end()
-}
-
-// generate a map to classfy the category of langs
-function generateEmptyLangsMap(langs, sourceData) {
-  const langsMap = new Map();
-  // init langsMap
-  for (const lang of langs) langsMap.set(lang, [])
-  langsMap.set('default', [])
-
-  for (const source of sourceData) {
-    // get and delete shorturl, for push to langs map
-    const shorturl = source.shorturl;
-    delete source.shorturl
-    // compat native api, if not contains these, will report error
-    if(!source.video) source.video = []
-    if(!source.links) source.links = []
-    if(!source.img) source.img = []
-    // normalize shorturl and get lang
-    if (shorturl[0] !== '/') shorturl = '/' + shorturl; // normalize shorturl
-    const urlLang = shorturl.split('/')[1];
-
-    if (langsMap.get(urlLang)) {
-      langsMap.get(urlLang).push(source);
-    } else {
-      langsMap.get('default').push(source);
+// generate all files info array 
+// the data sturcture like this, [{fileName:string, fileContent:string}, ]
+function generatefilesInfoArray(urlsMap, langs) {
+  const pagesContent = []
+  const allData = []
+  for(const [_, source] of urlsMap) {
+    const dataCombine = generateXMLBySource(source)
+    allData.push(dataCombine)
+  }
+  for(const lang of langs) {
+    const pageContentArray = [] // one page's content
+    for(const [xmlArrayDataString, xmlMapData] of allData) {
+      let xmlLoc;
+      if(xmlMapData.get(lang)) {
+        xmlLoc = wrapWithLoc(xmlMapData.get(lang))
+      } else {
+        continue; // not contains this lang
+      }
+      const urlData = wrapWithUrl(xmlLoc + xmlArrayDataString)
+      pageContentArray.push(urlData)
     }
+    const pageContent = wrapWithXMLHeader(
+      wrapWithUrlset(
+        pageContentArray.join('')
+      )
+    )
+    const fileName = lang + '-sitemap.xml'
+    pagesContent.push({fileName, pageContent})
   }
-  return langsMap;
+  return pagesContent;
 }
+
+// generate all xml array data by source data
+function generateXMLBySource(source) {
+  const xmlArrayData = []
+  const xmlMapData = new Map()
+  for(const {lang, url} of source) {
+    const xmlData = wrapWithXMLLink(lang, url)
+    xmlArrayData.push(xmlData)
+    xmlMapData.set(lang, url)
+  }
+  return [xmlArrayData.join(''), xmlMapData]
+}
+
+// for classfication
+// the map (k,v) represents (url, langs array). for example, ('/', [en, fr])
+function generateUrlsMap(langs, sourceData) {
+  // record langs in a map
+  const langsMap = new Map();
+  for(const lang of langs) langsMap.set(lang, true);
+  const urlsMap = new Map();
+  for(const data of sourceData) {
+    // classify by short url
+    let shorturl = data.shorturl;
+    const lang = shorturl.split('/')[1]
+    const hasLang = langsMap.get(lang);
+    if(hasLang) {
+      // remove lang prefix
+      shorturl = '/' + shorturl.split('/').slice(2).join('/')
+    } else {
+      lang = 'x-default'
+    }
+    if(!urlsMap.get(shorturl)) urlsMap.set(shorturl, []);
+    urlsMap.get(shorturl).push({lang, ...data})
+  }
+  return urlsMap;
+}
+
