@@ -26,6 +26,6 @@ exports.onRenderBody = function (_ref, pluginOptions) {
     key: "gatsby-plugin-sitemap",
     rel: "sitemap",
     type: "application/xml",
-    href: withPrefix(_path.posix.join(output, "/sitemap-index.xml"))
+    href: _path.posix.join(output, "/sitemap-index.xml")
   })]);
 };

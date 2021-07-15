@@ -6,7 +6,7 @@ exports[`gatsby-plugin-sitemap SSR API creates Link href with path prefix when _
     Array [
       Array [
         <link
-          href="/hogwarts/test-folder/sitemap-index.xml"
+          href="test-folder/sitemap-index.xml"
           rel="sitemap"
           type="application/xml"
         />,
@@ -28,7 +28,7 @@ exports[`gatsby-plugin-sitemap SSR API should create a Link if createLinkInHead 
     Array [
       Array [
         <link
-          href="/test-folder/sitemap-index.xml"
+          href="test-folder/sitemap-index.xml"
           rel="sitemap"
           type="application/xml"
         />,

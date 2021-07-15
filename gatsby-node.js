@@ -2,9 +2,6 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-exports.__esModule = true;
-exports.resolveSitemapAndIndex = void 0;
-
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends"));
@@ -203,8 +200,6 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
 }; // generate all files info array 
 // the data sturcture like this, [{lang:string, fileContent:string}, ]
 
-
-exports.resolveSitemapAndIndex = resolveSitemapAndIndex;
 
 function generatefilesInfoArray(urlsMap, langs) {
   var pagesContent = [];

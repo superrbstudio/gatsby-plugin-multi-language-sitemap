@@ -17,7 +17,7 @@ exports.onRenderBody = ({ setHeadComponents }, pluginOptions) => {
       key={`gatsby-plugin-sitemap`}
       rel="sitemap"
       type="application/xml"
-      href={withPrefix(posix.join(output, `/sitemap-index.xml`))}
+      href={posix.join(output, `/sitemap-index.xml`)}
     />,
   ])
 }

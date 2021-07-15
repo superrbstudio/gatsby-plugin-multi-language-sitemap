@@ -97,7 +97,7 @@ exports.onPostBuild = async (
 }
 
 // resolve sitemap and index
-export const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDir, sourceData, langs }) => {
+const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDir, sourceData, langs }) => {
   // mkdir if not exist
   fs.mkdirSync(destinationDir, { recursive: true });
   // normalize path
