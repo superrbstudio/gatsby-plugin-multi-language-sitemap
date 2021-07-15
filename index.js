@@ -81,5 +81,7 @@ resolveSitemapAndIndex({
       priority: 0.7
     }
   ],
-  langs: ['fr', 'zh-Hans']
+  langs: ['fr', 'zh-Hans', 
+  // jp and zh-Hant file won't generate, because we have no url items in list
+  'jp', 'zh-Hant']
 })

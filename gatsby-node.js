@@ -234,6 +234,7 @@ function generatefilesInfoArray(urlsMap, langs) {
       pageContentArray.push(urlData);
     }
 
+    if (pageContentArray.length === 0) continue;
     var pageContent = (0, _sitemapxml.wrapWithXMLHeader)((0, _sitemapxml.wrapWithUrlset)(pageContentArray.join('')));
     var fileName = lang + '-sitemap.xml';
     pagesContent.push({

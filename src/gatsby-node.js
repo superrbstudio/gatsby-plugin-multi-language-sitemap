@@ -142,6 +142,7 @@ function generatefilesInfoArray(urlsMap, langs) {
       const urlData = wrapWithUrl(xmlLoc + xmlArrayDataString)
       pageContentArray.push(urlData)
     }
+    if(pageContentArray.length === 0) continue;
     const pageContent = wrapWithXMLHeader(
       wrapWithUrlset(
         pageContentArray.join('')
