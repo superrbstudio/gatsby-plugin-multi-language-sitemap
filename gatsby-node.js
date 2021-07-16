@@ -32,7 +32,7 @@ exports.pluginOptionsSchema = _optionsValidation.pluginOptionsSchema;
 
 exports.onPostBuild = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(_ref, _ref2) {
-    var graphql, reporter, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath;
+    var graphql, reporter, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath, urlLangToHreflangMap, urlLangs, _iterator2, _step2, langObj;
 
     return _regenerator.default.wrap(function _callee$(_context) {
       while (1) {
@@ -125,16 +125,35 @@ exports.onPostBuild = /*#__PURE__*/function () {
 
           case 37:
             sitemapWritePath = _path.default.join("public", output);
-            sitemapPublicPath = _path.default.posix.normalize(output);
+            sitemapPublicPath = _path.default.posix.normalize(output); // add x-default
+
+            langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // map url lang to hreflang
+
+            urlLangToHreflangMap = new Map();
+            urlLangs = [];
+
+            for (_iterator2 = _createForOfIteratorHelperLoose(langs); !(_step2 = _iterator2()).done;) {
+              langObj = _step2.value;
+
+              if (typeof langObj === 'string') {
+                urlLangs.push(langObj);
+                urlLangToHreflangMap.set(langObj, langObj);
+              } else {
+                urlLangs.push(langObj.urlLang);
+                urlLangToHreflangMap.set(langObj.urlLang, langObj.hreflang);
+              }
+            }
+
             return _context.abrupt("return", resolveSitemapAndIndex({
               hostname: siteUrl,
               publicBasePath: sitemapPublicPath,
               destinationDir: sitemapWritePath,
               sourceData: serializedPages,
-              langs: langs
+              langs: urlLangs,
+              urlLangToHreflangMap: urlLangToHreflangMap
             }));
 
-          case 40:
+          case 44:
           case "end":
             return _context.stop();
         }
@@ -154,7 +173,8 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
       publicBasePath = _ref4$publicBasePath === void 0 ? './' : _ref4$publicBasePath,
       destinationDir = _ref4.destinationDir,
       sourceData = _ref4.sourceData,
-      langs = _ref4.langs;
+      langs = _ref4.langs,
+      urlLangToHreflangMap = _ref4.urlLangToHreflangMap;
 
   // mkdir if not exist
   _fs.default.mkdirSync(destinationDir, {
@@ -164,19 +184,17 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
 
   if (!publicBasePath.endsWith('/')) {
     publicBasePath += '/';
-  }
+  } // pipe items file
 
-  console.log('public base path: ' + publicBasePath);
-  langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // pipe items file
 
   var urlsMap = generateUrlsMap(langs, sourceData);
-  var filesInfoArray = generatefilesInfoArray(urlsMap, langs);
+  var filesInfoArray = generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap);
   langs = []; // clear langs to filter langs that had no items.
 
-  for (var _iterator2 = _createForOfIteratorHelperLoose(filesInfoArray), _step2; !(_step2 = _iterator2()).done;) {
-    var _step2$value = _step2.value,
-        lang = _step2$value.lang,
-        pageContent = _step2$value.pageContent;
+  for (var _iterator3 = _createForOfIteratorHelperLoose(filesInfoArray), _step3; !(_step3 = _iterator3()).done;) {
+    var _step3$value = _step3.value,
+        lang = _step3$value.lang,
+        pageContent = _step3$value.pageContent;
 
     _fs.default.writeFileSync(_path.default.resolve(destinationDir, lang + '-sitemap.xml'), pageContent);
 
@@ -201,26 +219,26 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
 // the data sturcture like this, [{lang:string, fileContent:string}, ]
 
 
-function generatefilesInfoArray(urlsMap, langs) {
+function generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap) {
   var pagesContent = [];
   var allData = [];
 
-  for (var _iterator3 = _createForOfIteratorHelperLoose(urlsMap), _step3; !(_step3 = _iterator3()).done;) {
-    var _step3$value = _step3.value,
-        _ = _step3$value[0],
-        source = _step3$value[1];
-    var dataCombine = generateXMLBySource(source);
+  for (var _iterator4 = _createForOfIteratorHelperLoose(urlsMap), _step4; !(_step4 = _iterator4()).done;) {
+    var _step4$value = _step4.value,
+        _ = _step4$value[0],
+        source = _step4$value[1];
+    var dataCombine = generateXMLBySource(source, urlLangToHreflangMap);
     allData.push(dataCombine);
   }
 
-  for (var _iterator4 = _createForOfIteratorHelperLoose(langs), _step4; !(_step4 = _iterator4()).done;) {
-    var lang = _step4.value;
+  for (var _iterator5 = _createForOfIteratorHelperLoose(langs), _step5; !(_step5 = _iterator5()).done;) {
+    var lang = _step5.value;
     var pageContentArray = []; // one page's content
 
-    for (var _iterator5 = _createForOfIteratorHelperLoose(allData), _step5; !(_step5 = _iterator5()).done;) {
-      var _step5$value = _step5.value,
-          xmlArrayDataString = _step5$value[0],
-          xmlMapData = _step5$value[1];
+    for (var _iterator6 = _createForOfIteratorHelperLoose(allData), _step6; !(_step6 = _iterator6()).done;) {
+      var _step6$value = _step6.value,
+          xmlArrayDataString = _step6$value[0],
+          xmlMapData = _step6$value[1];
       var xmlLoc = void 0;
 
       if (xmlMapData.get(lang)) {
@@ -245,15 +263,16 @@ function generatefilesInfoArray(urlsMap, langs) {
 } // generate all xml array data by source data
 
 
-function generateXMLBySource(source) {
+function generateXMLBySource(source, urlLangToHreflangMap) {
   var xmlArrayData = [];
   var xmlMapData = new Map();
 
-  for (var _iterator6 = _createForOfIteratorHelperLoose(source), _step6; !(_step6 = _iterator6()).done;) {
-    var _step6$value = _step6.value,
-        lang = _step6$value.lang,
-        url = _step6$value.url;
-    var xmlData = (0, _sitemapxml.wrapWithXMLLink)(lang, url);
+  for (var _iterator7 = _createForOfIteratorHelperLoose(source), _step7; !(_step7 = _iterator7()).done;) {
+    var _step7$value = _step7.value,
+        lang = _step7$value.lang,
+        url = _step7$value.url;
+    var hreflang = urlLangToHreflangMap.get(lang);
+    var xmlData = (0, _sitemapxml.wrapWithXMLLink)(hreflang, url);
     xmlArrayData.push(xmlData);
     xmlMapData.set(lang, url);
   }
@@ -267,15 +286,15 @@ function generateUrlsMap(langs, sourceData) {
   // record langs in a map
   var langsMap = new Map();
 
-  for (var _iterator7 = _createForOfIteratorHelperLoose(langs), _step7; !(_step7 = _iterator7()).done;) {
-    var lang = _step7.value;
+  for (var _iterator8 = _createForOfIteratorHelperLoose(langs), _step8; !(_step8 = _iterator8()).done;) {
+    var lang = _step8.value;
     langsMap.set(lang, true);
   }
 
   var urlsMap = new Map();
 
-  for (var _iterator8 = _createForOfIteratorHelperLoose(sourceData), _step8; !(_step8 = _iterator8()).done;) {
-    var data = _step8.value;
+  for (var _iterator9 = _createForOfIteratorHelperLoose(sourceData), _step9; !(_step9 = _iterator9()).done;) {
+    var data = _step9.value;
     // classify by short url
     var shorturl = data.shorturl;
     var _lang = shorturl.split('/')[1];

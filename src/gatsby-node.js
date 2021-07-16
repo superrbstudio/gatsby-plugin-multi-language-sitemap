@@ -86,29 +86,43 @@ exports.onPostBuild = async (
 
   const sitemapWritePath = path.join(`public`, output)
   const sitemapPublicPath = path.posix.normalize(output)
- 
+
+  // add x-default
+  langs = langs.includes('x-default') ? langs: langs.push('x-default') && langs
+  // map url lang to hreflang
+  const urlLangToHreflangMap = new Map();
+  const urlLangs = []
+  for(const langObj of langs) {
+    if(typeof langObj === 'string') {
+      urlLangs.push(langObj)
+      urlLangToHreflangMap.set(langObj, langObj)
+    } else {
+      urlLangs.push(langObj.urlLang)
+      urlLangToHreflangMap.set(langObj.urlLang, langObj.hreflang)
+    }
+  }
+
   return resolveSitemapAndIndex({
     hostname: siteUrl,
     publicBasePath: sitemapPublicPath,
     destinationDir: sitemapWritePath,
     sourceData: serializedPages,
-    langs: langs
+    langs: urlLangs,
+    urlLangToHreflangMap: urlLangToHreflangMap 
   })
 }
 
 // resolve sitemap and index
-const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDir, sourceData, langs }) => {
+const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDir, sourceData, langs, urlLangToHreflangMap }) => {
   // mkdir if not exist
   fs.mkdirSync(destinationDir, { recursive: true });
   // normalize path
   if (!publicBasePath.endsWith('/')) {
     publicBasePath += '/';
   }
-  console.log('public base path: ' + publicBasePath)
-  langs = langs.includes('x-default') ? langs: langs.push('x-default') && langs
   // pipe items file
   const urlsMap = generateUrlsMap(langs, sourceData);
-  const filesInfoArray= generatefilesInfoArray(urlsMap, langs);
+  const filesInfoArray= generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap);
   langs = [] // clear langs to filter langs that had no items.
   for(const {lang, pageContent} of filesInfoArray) {
     fs.writeFileSync(path.resolve(destinationDir, lang + '-sitemap.xml'), pageContent);
@@ -127,11 +141,11 @@ const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDi
 
 // generate all files info array 
 // the data sturcture like this, [{lang:string, fileContent:string}, ]
-function generatefilesInfoArray(urlsMap, langs) {
+function generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap) {
   const pagesContent = []
   const allData = []
   for(const [_, source] of urlsMap) {
-    const dataCombine = generateXMLBySource(source)
+    const dataCombine = generateXMLBySource(source, urlLangToHreflangMap)
     allData.push(dataCombine)
   }
   for(const lang of langs) {
@@ -158,11 +172,12 @@ function generatefilesInfoArray(urlsMap, langs) {
 }
 
 // generate all xml array data by source data
-function generateXMLBySource(source) {
+function generateXMLBySource(source, urlLangToHreflangMap) {
   const xmlArrayData = []
   const xmlMapData = new Map()
   for(const {lang, url} of source) {
-    const xmlData = wrapWithXMLLink(lang, url)
+    const hreflang = urlLangToHreflangMap.get(lang)
+    const xmlData = wrapWithXMLLink(hreflang, url)
     xmlArrayData.push(xmlData)
     xmlMapData.set(lang, url)
   }

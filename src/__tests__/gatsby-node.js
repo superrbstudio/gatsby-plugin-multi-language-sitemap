@@ -74,7 +74,16 @@ describe(`gatsby-plugin-sitemap Node API`, () => {
     const subdir = `/subdir`
     const options = {
       output: subdir,
-      langs: ['fr', 'zh-Hans']
+      langs: [
+        {
+					urlLang: 'fr',
+					hreflang: 'frrrr',
+				}, 
+        'zh-Hans', 
+        {
+        urlLang: 'ko',
+        hreflang: 'ko-KR',
+        }]
     }
     const result = await onPostBuild(
       { graphql, pathPrefix: prefix, reporter },
