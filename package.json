@@ -1,7 +1,7 @@
 {
   "name": "gatsby-plugin-multi-language-sitemap",
   "description": "Gatsby plugin that automatically creates a sitemap supporting multi-language for your site",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "homepage": "https://github.com/SteveYuOWO/gatsby-plugin-multi-language-sitemap",
   "repository": {
     "type": "git",
@@ -12,19 +12,19 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.14.6",
-    "@types/jest": "^26.0.24",
     "common-tags": "^1.8.0",
-    "jest": "^27.0.6",
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
     "@babel/core": "^7.14.6",
+    "@types/jest": "^26.0.24",
     "babel-preset-gatsby-package": "^1.10.0-next.0",
     "cross-env": "^7.0.3",
     "gatsby": "^3.0.0-next.0",
     "gatsby-plugin-utils": "^1.10.0-next.0",
     "git-cz": "^4.7.6",
+    "jest": "^27.0.6",
     "react": "^16.9.0 || ^17.0.0",
     "react-dom": "^16.9.0 || ^17.0.0"
   },
