@@ -32,13 +32,13 @@ exports.pluginOptionsSchema = _optionsValidation.pluginOptionsSchema;
 
 exports.onPostBuild = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(_ref, _ref2) {
-    var graphql, reporter, pathPrefix, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath;
+    var graphql, reporter, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath;
 
     return _regenerator.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            graphql = _ref.graphql, reporter = _ref.reporter, pathPrefix = _ref.pathPrefix;
+            graphql = _ref.graphql, reporter = _ref.reporter;
             output = _ref2.output, query = _ref2.query, excludes = _ref2.excludes, resolveSiteUrl = _ref2.resolveSiteUrl, resolvePagePath = _ref2.resolvePagePath, resolvePages = _ref2.resolvePages, filterPages = _ref2.filterPages, serialize = _ref2.serialize, langs = _ref2.langs;
             _context.next = 4;
             return graphql(query);
@@ -108,8 +108,7 @@ exports.onPostBuild = /*#__PURE__*/function () {
               // for langs classfication
               url: (0, _internals.prefixPath)({
                 url: url,
-                siteUrl: siteUrl,
-                pathPrefix: pathPrefix
+                siteUrl: siteUrl
               })
             }, rest));
             _context.next = 35;
@@ -126,7 +125,7 @@ exports.onPostBuild = /*#__PURE__*/function () {
 
           case 37:
             sitemapWritePath = _path.default.join("public", output);
-            sitemapPublicPath = _path.default.posix.join(pathPrefix, output);
+            sitemapPublicPath = _path.default.posix.normalize(output);
             return _context.abrupt("return", resolveSitemapAndIndex({
               hostname: siteUrl,
               publicBasePath: sitemapPublicPath,
@@ -167,6 +166,7 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
     publicBasePath += '/';
   }
 
+  console.log('public base path: ' + publicBasePath);
   langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // pipe items file
 
   var urlsMap = generateUrlsMap(langs, sourceData);

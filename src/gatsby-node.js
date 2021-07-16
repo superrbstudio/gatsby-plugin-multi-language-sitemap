@@ -7,7 +7,7 @@ import { generateSitemapIndexXML, wrapWithLoc, wrapWithUrl, wrapWithUrlset, wrap
 exports.pluginOptionsSchema = pluginOptionsSchema
 
 exports.onPostBuild = async (
-  { graphql, reporter, pathPrefix },
+  { graphql, reporter },
   {
     output,
     query,
@@ -76,7 +76,7 @@ exports.onPostBuild = async (
       )
       serializedPages.push({
         shorturl: url, // for langs classfication
-        url: prefixPath({ url, siteUrl, pathPrefix }),
+        url: prefixPath({ url, siteUrl }),
         ...rest,
       })
     } catch (err) {
@@ -85,8 +85,8 @@ exports.onPostBuild = async (
   }
 
   const sitemapWritePath = path.join(`public`, output)
-  const sitemapPublicPath = path.posix.join(pathPrefix, output)
-
+  const sitemapPublicPath = path.posix.normalize(output)
+ 
   return resolveSitemapAndIndex({
     hostname: siteUrl,
     publicBasePath: sitemapPublicPath,
@@ -104,6 +104,7 @@ const resolveSitemapAndIndex = ({ hostname, publicBasePath = './', destinationDi
   if (!publicBasePath.endsWith('/')) {
     publicBasePath += '/';
   }
+  console.log('public base path: ' + publicBasePath)
   langs = langs.includes('x-default') ? langs: langs.push('x-default') && langs
   // pipe items file
   const urlsMap = generateUrlsMap(langs, sourceData);
