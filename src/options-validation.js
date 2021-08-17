@@ -1,5 +1,5 @@
-import { parse as parseGraphql } from "gatsby/graphql"
-import { stripIndent, oneLine } from "common-tags"
+import { parse as parseGraphql } from "gatsby/graphql";
+import { stripIndent, oneLine } from "common-tags";
 
 import {
   resolveSiteUrl,
@@ -7,7 +7,7 @@ import {
   resolvePages,
   serialize,
   defaultFilterPages,
-} from "./internals"
+} from "./internals";
 
 export const pluginOptionsSchema = ({ Joi }) =>
   Joi.object({
@@ -39,13 +39,13 @@ export const pluginOptionsSchema = ({ Joi }) =>
       .external(({ query }) => {
         if (query) {
           try {
-            parseGraphql(query)
+            parseGraphql(query);
           } catch (e) {
             throw new Error(
               stripIndent`
         Invalid plugin options for "gatsby-plugin-sitemap":
         "query" must be a valid GraphQL query. Received the error "${e.message}"`
-            )
+            );
           }
         }
       })
@@ -100,5 +100,10 @@ export const pluginOptionsSchema = ({ Joi }) =>
       .default([])
       .description(
         stripIndent`Language array, like ['en', 'zh-Hans', 'fr', ...]`
-      )
-  })
+      ),
+    combinedHrefs: Joi.boolean()
+      .default(false)
+      .description(
+        `Generate combined hrefs in one file, and indexed in sitemap-index.xml`
+      ),
+  });

@@ -32,14 +32,14 @@ exports.pluginOptionsSchema = _optionsValidation.pluginOptionsSchema;
 
 exports.onPostBuild = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(_ref, _ref2) {
-    var graphql, reporter, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath, urlLangToHreflangMap, urlLangs, _iterator2, _step2, langObj;
+    var graphql, reporter, output, query, excludes, resolveSiteUrl, resolvePagePath, resolvePages, filterPages, serialize, langs, combinedHrefs, _yield$graphql, queryRecords, errors, siteUrl, allPages, _pageFilter, filteredPages, messages, serializedPages, _iterator, _step, page, _yield$Promise$resolv, url, rest, sitemapWritePath, sitemapPublicPath, urlLangToHreflangMap, urlLangs, _iterator2, _step2, langObj;
 
     return _regenerator.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             graphql = _ref.graphql, reporter = _ref.reporter;
-            output = _ref2.output, query = _ref2.query, excludes = _ref2.excludes, resolveSiteUrl = _ref2.resolveSiteUrl, resolvePagePath = _ref2.resolvePagePath, resolvePages = _ref2.resolvePages, filterPages = _ref2.filterPages, serialize = _ref2.serialize, langs = _ref2.langs;
+            output = _ref2.output, query = _ref2.query, excludes = _ref2.excludes, resolveSiteUrl = _ref2.resolveSiteUrl, resolvePagePath = _ref2.resolvePagePath, resolvePages = _ref2.resolvePages, filterPages = _ref2.filterPages, serialize = _ref2.serialize, langs = _ref2.langs, combinedHrefs = _ref2.combinedHrefs;
             _context.next = 4;
             return graphql(query);
 
@@ -127,7 +127,7 @@ exports.onPostBuild = /*#__PURE__*/function () {
             sitemapWritePath = _path.default.join("public", output);
             sitemapPublicPath = _path.default.posix.normalize(output); // add x-default
 
-            langs = langs.includes('x-default') ? langs : langs.push('x-default') && langs; // map url lang to hreflang
+            langs = langs.includes("x-default") ? langs : langs.push("x-default") && langs; // map url lang to hreflang
 
             urlLangToHreflangMap = new Map();
             urlLangs = [];
@@ -135,7 +135,7 @@ exports.onPostBuild = /*#__PURE__*/function () {
             for (_iterator2 = _createForOfIteratorHelperLoose(langs); !(_step2 = _iterator2()).done;) {
               langObj = _step2.value;
 
-              if (typeof langObj === 'string') {
+              if (typeof langObj === "string") {
                 urlLangs.push(langObj);
                 urlLangToHreflangMap.set(langObj, langObj);
               } else {
@@ -150,7 +150,8 @@ exports.onPostBuild = /*#__PURE__*/function () {
               destinationDir: sitemapWritePath,
               sourceData: serializedPages,
               langs: urlLangs,
-              urlLangToHreflangMap: urlLangToHreflangMap
+              urlLangToHreflangMap: urlLangToHreflangMap,
+              combinedHrefs: combinedHrefs
             }));
 
           case 44:
@@ -170,11 +171,12 @@ exports.onPostBuild = /*#__PURE__*/function () {
 var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
   var hostname = _ref4.hostname,
       _ref4$publicBasePath = _ref4.publicBasePath,
-      publicBasePath = _ref4$publicBasePath === void 0 ? './' : _ref4$publicBasePath,
+      publicBasePath = _ref4$publicBasePath === void 0 ? "./" : _ref4$publicBasePath,
       destinationDir = _ref4.destinationDir,
       sourceData = _ref4.sourceData,
       langs = _ref4.langs,
-      urlLangToHreflangMap = _ref4.urlLangToHreflangMap;
+      urlLangToHreflangMap = _ref4.urlLangToHreflangMap,
+      combinedHrefs = _ref4.combinedHrefs;
 
   // mkdir if not exist
   _fs.default.mkdirSync(destinationDir, {
@@ -182,29 +184,41 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
   }); // normalize path
 
 
-  if (!publicBasePath.endsWith('/')) {
-    publicBasePath += '/';
+  if (!publicBasePath.endsWith("/")) {
+    publicBasePath += "/";
   } // pipe items file
 
 
   var urlsMap = generateUrlsMap(langs, sourceData);
-  var filesInfoArray = generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap);
+
+  var _generatefilesInfoArr = generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap),
+      pagesContentCombine = _generatefilesInfoArr.pagesContentCombine,
+      pagesContent = _generatefilesInfoArr.pagesContent;
+
   langs = []; // clear langs to filter langs that had no items.
 
-  for (var _iterator3 = _createForOfIteratorHelperLoose(filesInfoArray), _step3; !(_step3 = _iterator3()).done;) {
+  for (var _iterator3 = _createForOfIteratorHelperLoose(pagesContent), _step3; !(_step3 = _iterator3()).done;) {
     var _step3$value = _step3.value,
         lang = _step3$value.lang,
         pageContent = _step3$value.pageContent;
 
-    _fs.default.writeFileSync(_path.default.resolve(destinationDir, lang + '-sitemap.xml'), pageContent);
+    _fs.default.writeFileSync(_path.default.resolve(destinationDir, lang + "-sitemap.xml"), pageContent);
 
     langs.push(lang);
+  } // if combined hrefs pipe combined file
+
+
+  if (combinedHrefs) {
+    _fs.default.writeFileSync(_path.default.resolve(destinationDir, "sitemap.xml"), pagesContentCombine);
   } // pipe index file
 
 
   var sitemapIndexLocs = langs.map(function (lang) {
-    return hostname + _path.default.normalize(publicBasePath + lang + '-sitemap.xml');
-  });
+    return hostname + _path.default.normalize(publicBasePath + lang + "-sitemap.xml");
+  }); // if combined hrefs
+  // add sitemap.xml
+
+  if (combinedHrefs) sitemapIndexLocs = [hostname + _path.default.normalize(publicBasePath + "sitemap.xml")].concat(sitemapIndexLocs);
   var sitemapIndexXML = (0, _sitemapxml.generateSitemapIndexXML)(sitemapIndexLocs);
 
   var sitemapIndexWritePath = _path.default.resolve(destinationDir, "sitemap-index.xml");
@@ -213,15 +227,17 @@ var resolveSitemapAndIndex = function resolveSitemapAndIndex(_ref4) {
 
   return {
     sitemapIndexXML: sitemapIndexXML,
-    filesInfoArray: filesInfoArray
+    pagesContent: pagesContent
   };
-}; // generate all files info array 
-// the data sturcture like this, [{lang:string, fileContent:string}, ]
+}; // generate all files info array
+// the pageContent data sturcture like this, [{lang:string, fileContent:string}, ]
+// pagesContentCombine combine all pageContent
 
 
 function generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap) {
   var pagesContent = [];
   var allData = [];
+  var pageSumDataArray = [];
 
   for (var _iterator4 = _createForOfIteratorHelperLoose(urlsMap), _step4; !(_step4 = _iterator4()).done;) {
     var _step4$value = _step4.value,
@@ -249,17 +265,21 @@ function generatefilesInfoArray(urlsMap, langs, urlLangToHreflangMap) {
 
       var urlData = (0, _sitemapxml.wrapWithUrl)(xmlLoc + xmlArrayDataString);
       pageContentArray.push(urlData);
+      pageSumDataArray.push(urlData);
     }
 
     if (pageContentArray.length === 0) continue;
-    var pageContent = (0, _sitemapxml.wrapWithXMLHeader)((0, _sitemapxml.wrapWithUrlset)(pageContentArray.join('')));
+    var pageContent = (0, _sitemapxml.wrapWithXMLHeader)((0, _sitemapxml.wrapWithUrlset)(pageContentArray.join("")));
     pagesContent.push({
       lang: lang,
       pageContent: pageContent
     });
   }
 
-  return pagesContent;
+  return {
+    pagesContentCombine: (0, _sitemapxml.wrapWithXMLHeader)((0, _sitemapxml.wrapWithUrlset)(pageSumDataArray.join(""))),
+    pagesContent: pagesContent
+  };
 } // generate all xml array data by source data
 
 
@@ -277,7 +297,7 @@ function generateXMLBySource(source, urlLangToHreflangMap) {
     xmlMapData.set(lang, url);
   }
 
-  return [xmlArrayData.join(''), xmlMapData];
+  return [xmlArrayData.join(""), xmlMapData];
 } // for classfication
 // the map (k,v) represents (url, langs array). for example, ('/', [en, fr])
 
@@ -297,14 +317,14 @@ function generateUrlsMap(langs, sourceData) {
     var data = _step9.value;
     // classify by short url
     var shorturl = data.shorturl;
-    var _lang = shorturl.split('/')[1];
+    var _lang = shorturl.split("/")[1];
     var hasLang = langsMap.get(_lang);
 
     if (hasLang) {
       // remove lang prefix
-      shorturl = '/' + shorturl.split('/').slice(2).join('/');
+      shorturl = "/" + shorturl.split("/").slice(2).join("/");
     } else {
-      _lang = 'x-default';
+      _lang = "x-default";
     }
 
     if (!urlsMap.get(shorturl)) urlsMap.set(shorturl, []);

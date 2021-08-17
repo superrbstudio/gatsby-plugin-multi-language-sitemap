@@ -48,7 +48,8 @@ var pluginOptionsSchema = function pluginOptionsSchema(_ref) {
     serialize: Joi.function().default(function () {
       return _internals.serialize;
     }).description("Takes the output of `filterPages` and lets you return a sitemap entry."),
-    langs: Joi.array().default([]).description((0, _commonTags.stripIndent)(_templateObject6 || (_templateObject6 = (0, _taggedTemplateLiteralLoose2.default)(["Language array, like ['en', 'zh-Hans', 'fr', ...]"]))))
+    langs: Joi.array().default([]).description((0, _commonTags.stripIndent)(_templateObject6 || (_templateObject6 = (0, _taggedTemplateLiteralLoose2.default)(["Language array, like ['en', 'zh-Hans', 'fr', ...]"])))),
+    combinedHrefs: Joi.boolean().default(false).description("Generate combined hrefs in one file, and indexed in sitemap-index.xml")
   });
 };
 

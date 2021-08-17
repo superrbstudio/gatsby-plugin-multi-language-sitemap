@@ -1,35 +1,36 @@
-import { pluginOptionsSchema } from "../options-validation"
-import { testPluginOptionsSchema, Joi } from "gatsby-plugin-utils"
+import { pluginOptionsSchema } from "../options-validation";
+import { testPluginOptionsSchema, Joi } from "gatsby-plugin-utils";
 
 describe(`pluginOptionsSchema`, () => {
   it(`should provide meaningful errors when fields are invalid`, async () => {
-    const expectedErrors = [`"wrong" is not allowed`]
+    const expectedErrors = [`"wrong" is not allowed`];
 
     const { errors } = await testPluginOptionsSchema(pluginOptionsSchema, {
       wrong: `test`,
-    })
+    });
 
-    expect(errors).toEqual(expectedErrors)
-  })
+    expect(errors).toEqual(expectedErrors);
+  });
 
   it(`creates correct defaults`, async () => {
-    const pluginOptions = await pluginOptionsSchema({ Joi }).validateAsync({})
+    const pluginOptions = await pluginOptionsSchema({ Joi }).validateAsync({});
 
     expect(pluginOptions).toMatchInlineSnapshot(`
-Object {
-  "createLinkInHead": true,
-  "excludes": Array [],
-  "filterPages": [Function],
-  "langs": Array [],
-  "output": "/sitemap",
-  "query": "{ site { siteMetadata { siteUrl } } allSitePage { nodes { path } } }",
-  "resolvePagePath": [Function],
-  "resolvePages": [Function],
-  "resolveSiteUrl": [Function],
-  "serialize": [Function],
-}
-`)
-  })
+      Object {
+        "combinedHrefs": false,
+        "createLinkInHead": true,
+        "excludes": Array [],
+        "filterPages": [Function],
+        "langs": Array [],
+        "output": "/sitemap",
+        "query": "{ site { siteMetadata { siteUrl } } allSitePage { nodes { path } } }",
+        "resolvePagePath": [Function],
+        "resolvePages": [Function],
+        "resolveSiteUrl": [Function],
+        "serialize": [Function],
+      }
+    `);
+  });
 
   it.each`
     options
@@ -39,8 +40,8 @@ Object {
     const { isValid } = await testPluginOptionsSchema(
       pluginOptionsSchema,
       options
-    )
+    );
 
-    expect(isValid).toBe(true)
-  })
-})
+    expect(isValid).toBe(true);
+  });
+});
