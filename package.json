@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-plugin-multi-language-sitemap",
+  "name": "@superrb/gatsby-plugin-multi-language-sitemap",
   "description": "Gatsby plugin that automatically creates a sitemap supporting multi-language for your site",
   "version": "1.1.2",
   "homepage": "https://github.com/SteveYuOWO/gatsby-plugin-multi-language-sitemap",
